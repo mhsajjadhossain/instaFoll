@@ -10,60 +10,79 @@ let counterFlag=1;
 let popupWindow = (url)=>{
 	return window.open(url,'popUpWindow','height=500,width=500,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no, status=yes')
 }
+let triggerMe = ()=>{
+	triggerBtn.forEach((btn)=>{
+		btn.addEventListener('click',(e)=>{
+			counterFlag++
+			
+			if(2 === counterFlag){
+				firstStep.classList.add('d-none');
+				secondStep.classList.remove('d-none');
+				
+	
+				counterFlag = 0
+	
+				followBtn.forEach((follow)=>{
+					follow.addEventListener('click',(e)=>{
+						counterFlag++
+						$(follow).siblings().addClass('disabled')
+						let url = follow.getAttribute('data-url-info')
+						popupWindow(url)
+						follow.classList.add('disabled')
+						
+						if(counterFlag >= 4){
+							secondStep.classList.add('d-none');
+							thirdStep.classList.remove('d-none');
+							counterFlag = 0;
+	
+							mainForm.addEventListener('submit',(e)=>{
+								e.preventDefault();
+								let username = userNameInput.value;
+								let emailAddress = emailInput.value;
+								$.get( `https://hooks.zapier.com/hooks/catch/1805654/oe3g3a1/?email=${emailAddress}&name=${username}`);
+								
+								$('.get_email_wrap').addClass('d-none')
+								$('.thank_you_msg').removeClass('d-none')
+								   
+							})
+							
+	
+						}
+					})
+				})
+	
+	
+			}
+			
+		})
+	
+	})
+}
+
+
+
 
 let alertBtn = document.querySelectorAll('[data-condition]')
 
 alertBtn.forEach(btn=>{
 	btn.addEventListener('click',()=>{
-		$('.popupModal').addClass('hide')
-		$('.modal_overlay').addClass('hide')
+		let expr = btn.getAttribute('data-condition')
+		if(expr === 'yes'){
+			$('.popupModal').addClass('hide')
+			$('.modal_overlay').addClass('hide')
+			triggerMe()
+		}else if(expr === 'no'){
+			$('.popupModal').addClass('hide')
+			$('.ifFalse').addClass('show')
+			
+		}else if(expr === 'notnow'){
+			$('.popupModal').addClass('hide')
+			$('.ifFalse').removeClass('show')
+			$('.modal_overlay').addClass('hide')
+			triggerMe()
+		}
 
-		triggerBtn.forEach((btn)=>{
-			btn.addEventListener('click',(e)=>{
-				counterFlag++
-				
-				if(2 === counterFlag){
-					firstStep.classList.add('d-none');
-					secondStep.classList.remove('d-none');
-					
 		
-					counterFlag = 0
-		
-					followBtn.forEach((follow)=>{
-						follow.addEventListener('click',(e)=>{
-							counterFlag++
-							$(follow).siblings().addClass('disabled')
-							let url = follow.getAttribute('data-url-info')
-							popupWindow(url)
-							follow.classList.add('disabled')
-							
-							if(counterFlag >= 4){
-								secondStep.classList.add('d-none');
-								thirdStep.classList.remove('d-none');
-								counterFlag = 0;
-		
-								mainForm.addEventListener('submit',(e)=>{
-									e.preventDefault();
-									let username = userNameInput.value;
-									let emailAddress = emailInput.value;
-									$.get( `https://hooks.zapier.com/hooks/catch/1805654/oe3g3a1/?email=${emailAddress}&name=${username}`);
-									
-									$('.get_email_wrap').addClass('d-none')
-									$('.thank_you_msg').removeClass('d-none')
-									   
-								})
-								
-		
-							}
-						})
-					})
-		
-		
-				}
-				
-			})
-		
-		})
 
 		
 	})
